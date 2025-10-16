@@ -29,15 +29,7 @@ const Sidebar = ({
 
   const handleSendMessage = () => {
     if (chatInput.trim()) {
-      // Add user message to chat
-      const userMessage = {
-        id: Date.now(),
-        type: 'user',
-        content: chatInput,
-        timestamp: new Date()
-      };
-      
-      // Add user message first
+      // Send message to parent component
       onSendMessage(chatInput);
       setChatInput('');
     }
@@ -51,7 +43,7 @@ const Sidebar = ({
   };
 
   return (
-    <div className="w-80 bg-gray-900 border-r border-gray-700 flex flex-col h-full">
+    <div className="w-80 bg-gray-900 border-l border-gray-700 flex flex-col h-full">
       {/* Header */}
       <div className="p-4 border-b border-gray-700">
         <h1 className="text-xl font-bold text-white flex items-center">

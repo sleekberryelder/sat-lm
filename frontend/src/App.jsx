@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import SatelliteMap from './components/SatelliteMap';
+import SatelliteGlobe from './components/SatelliteGlobe';
 import Sidebar from './components/Sidebar';
 import axios from 'axios';
 
@@ -45,6 +45,15 @@ function App() {
 
   // Send chat message to Ollama
   const sendChatMessage = async (message) => {
+    // Add user message immediately
+    const userMessage = {
+      id: Date.now(),
+      type: 'user',
+      content: message,
+      timestamp: new Date()
+    };
+    setChatMessages(prev => [...prev, userMessage]);
+    
     setChatLoading(true);
     try {
       const response = await axios.post(`${API_BASE_URL}/chat`, {
@@ -52,17 +61,17 @@ function App() {
         model: 'llama3'
       });
       
-      const newMessage = {
-        id: Date.now(),
+      const assistantMessage = {
+        id: Date.now() + 1,
         type: 'assistant',
         content: response.data.response,
         timestamp: new Date()
       };
       
-      setChatMessages(prev => [...prev, newMessage]);
+      setChatMessages(prev => [...prev, assistantMessage]);
     } catch (err) {
       const errorMessage = {
-        id: Date.now(),
+        id: Date.now() + 1,
         type: 'error',
         content: 'Failed to get response from AI assistant. Please ensure Ollama is running.',
         timestamp: new Date()
@@ -86,7 +95,16 @@ function App() {
 
   return (
     <div className="flex h-screen bg-space-dark text-white">
-      {/* Sidebar */}
+      {/* 3D Globe - Left Side */}
+      <div className="flex-1">
+        <SatelliteGlobe
+          satellites={filteredSatellites}
+          selectedSatellite={selectedSatellite}
+          onSatelliteSelect={setSelectedSatellite}
+        />
+      </div>
+      
+      {/* Sidebar - Right Side */}
       <Sidebar
         satellites={filteredSatellites}
         selectedSatellite={selectedSatellite}
@@ -101,15 +119,6 @@ function App() {
         chatLoading={chatLoading}
         totalSatellites={satellites.length}
       />
-      
-      {/* Map */}
-      <div className="flex-1">
-        <SatelliteMap
-          satellites={filteredSatellites}
-          selectedSatellite={selectedSatellite}
-          onSatelliteSelect={setSelectedSatellite}
-        />
-      </div>
     </div>
   );
 }
